@@ -1,30 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Tool 1</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #003366; /* Dark blue background */
-  }
-
-  /* Style for the webpage name */
-  .title {
-    margin-top: 155px; /* Lower the title */
-    font-size: 90px; /* Larger text */
-    color: #fff;
-    text-align: center;
-  }
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functional Calculator</title>
+    <!-- Load Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom style for button active state */
+        .calculator-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
-<body>
+<body class="font-sans flex items-center justify-center min-h-screen" style="background-color: #003366;">
 
-<!-- Webpage Title -->
-<div class="title">Tool 1</div>
+    <div class="bg-white w-full max-w-xs sm:max-w-sm rounded-2xl shadow-xl p-6">
+        
+        <!-- Calculator Screen -->
+        <div id="calculator-screen" class="bg-gray-900 text-white text-right text-5xl p-6 rounded-lg mb-6 overflow-hidden break-all" style="min-height: 80px;">
+            0
+        </div>
 
+        <!-- Calculator Buttons Grid -->
+        <div class="grid grid-cols-4 gap-4">
+            <!-- Row 1 -->
+            <button data-type="clear" class="calculator-btn text-2xl font-semibold bg-red-400 hover:bg-red-500 text-white p-4 rounded-lg transition-all duration-200">AC</button>
+            <button data-type="operator" data-value="%" class="calculator-btn text-2xl font-semibold bg-gray-200 hover:bg-gray-300 p-4 rounded-lg transition-all duration-200">%</button>
+            <button data-type="operator" data-value="/" class="calculator-btn text-2xl font-semibold bg-orange-400 hover:bg-orange-500 text-white p-4 rounded-lg transition-all duration-200">&divide;</button>
+            <button data-type="operator" data-value="*" class="calculator-btn text-2xl font-semibold bg-orange-400 hover:bg-orange-500 text-white p-4 rounded-lg transition-all duration-200">&times;</button>
+
+            <!-- Row 2 -->
+            <button data-type="number" data-value="7" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">7</button>
+            <button data-type="number" data-value="8" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">8</button>
+            <button data-type="number" data-value="9" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">9</button>
+            <button data-type="operator" data-value="-" class="calculator-btn text-2xl font-semibold bg-orange-400 hover:bg-orange-500 text-white p-4 rounded-lg transition-all duration-200">&minus;</button>
+
+            <!-- Row 3 -->
+            <button data-type="number" data-value="4" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">4</button>
+            <button data-type="number" data-value="5" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">5</button>
+            <button data-type="number" data-value="6" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">6</button>
+            <button data-type="operator" data-value="+" class="calculator-btn text-2xl font-semibold bg-orange-400 hover:bg-orange-500 text-white p-4 rounded-lg transition-all duration-200">+</button>
+
+            <!-- Row 4 -->
+            <button data-type="number" data-value="1" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">1</button>
+            <button data-type="number" data-value="2" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">2</button>
+            <button data-type="number" data-value="3" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">3</button>
+            <button data-type="equals" class="calculator-btn text-2xl font-semibold bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg transition-all duration-200 row-span-2">=</button>
+
+            <!-- Row 5 -->
+            <button data-type="number" data-value="0" class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200 col-span-2">0</button>
+F            <button data-type="decimal" data-value="." class="calculator-btn text-2xl font-semibold bg-gray-700 hover:bg-gray-800 text-white p-4 rounded-lg transition-all duration-200">.</button>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const screen = document.getElementById('calculator-screen');
+            const buttons = document.querySelector('.grid');
+
+            // Calculator state
+            let displayValue = '0';
+            let firstOperand = null;
+            let operator = null;
+            let waitingForSecondOperand = false;
+
+            // Updates the calculator screen
+            function updateDisplay() {
+                // Format large numbers
+                let formattedValue = displayValue;
+                if (formattedValue.length > 10) {
+                    // Use exponential notation for very large or small numbers
+                    if (Math.abs(parseFloat(formattedValue)) > 9999999999 || (Math.abs(parseFloat(formattedValue)) < 0.000000001 && parseFloat(formattedValue) !== 0)) {
+                        formattedValue = parseFloat(formattedValue).toExponential(5);
+                    } else {
+                        // Truncate long decimals
+                        formattedValue = formattedValue.substring(0, 10);
+                    }
+                }
+                screen.textContent = formattedValue;
+            }
+
+            // Handles number button presses
+            function inputNumber(num) {
+                if (waitingForSecondOperand) {
+                    displayValue = num;
+                    waitingForSecondOperand = false;
+                } else {
+                    displayValue = displayValue === '0' ? num : displayValue + num;
+                }
+            }
+
+            // Handles decimal point button press
+            function inputDecimal() {
+                // If we just pressed an operator, start new number with '0.'
+                if (waitingForSecondOperand) {
+                    displayValue = '0.';
+                    waitingForSecondOperand = false;
+                    return;
+                }
+                // Only add a decimal point if one doesn't already exist
+                if (!displayValue.includes('.')) {
+                    displayValue += '.';
+                }
+            }
+
+            // Performs the calculation
+            function performCalculation(first, second, op) {
+                const firstNum = parseFloat(first);
+                const secondNum = parseFloat(second);
+
+                if (op === '+') return firstNum + secondNum;
+                if (op === '-') return firstNum - secondNum;
+                if (op === '*') return firstNum * secondNum;
+                if (op === '/') {
+                    if (secondNum === 0) {
+                        return 'Error'; // Handle division by zero
+                    }
+                    return firstNum / secondNum;
+                }
+                if (op === '%') {
+                    // Percentage: e.g., 100 - 10% = 90
+                    // In this calculator, '%' will mean (first * second / 100)
+                    return (firstNum * secondNum) / 100;
+                }
+                return secondNum; // Should not be reached
+            }
+
+            // Handles operator button presses
+            function handleOperator(nextOperator) {
+                const inputValue = parseFloat(displayValue);
+
+                // Handle 'Error' state
+                if (displayValue === 'Error') {
+                    resetCalculator();
+                    return;
+                }
+
+                // Change operator if waiting for second operand
+                if (operator && waitingForSecondOperand) {
+                    operator = nextOperator;
+                    return;
+                }
+
+                // Set first operand if it's null
+                if (firstOperand === null) {
+                    firstOperand = inputValue;
+                } else if (operator) {
+                    // We have a first operand and an operator, so calculate
+                    const result = performCalculation(firstOperand, inputValue, operator);
+                    
+                    if (result === 'Error') {
+                        displayValue = 'Error';
+                        updateDisplay();
+                        // Don't reset everything, allow user to press 'AC'
+                        firstOperand = null;
+                        operator = null;
+                        waitingForSecondOperand = false;
+                        return;
+                    }
+                    
+                    displayValue = String(parseFloat(result.toFixed(10))); // Fix floating point issues
+                    firstOperand = result;
+                }
+
+                waitingForSecondOperand = true;
+                operator = nextOperator;
+            }
+
+            // Resets the calculator to its initial state
+            function resetCalculator() {
+                displayValue = '0';
+                firstOperand = null;
+                operator = null;
+                waitingForSecondOperand = false;
+            }
+
+            // Main event listener for all button clicks
+            buttons.addEventListener('click', (event) => {
+                const { target } = event;
+
+                // Exit if the click was not on a button
+                if (!target.matches('button')) {
+                    return;
+                }
+
+                const { type, value } = target.dataset;
+
+                switch (type) {
+                    case 'number':
+                        if (displayValue === 'Error') break;
+                        inputNumber(value);
+                        break;
+                    case 'decimal':
+                        if (displayValue === 'Error') break;
+                        inputDecimal();
+                        break;
+                    case 'operator':
+                        handleOperator(value);
+                        break;
+                    case 'equals':
+                        // Only calculate if we have all parts
+                        if (operator && firstOperand !== null && !waitingForSecondOperand) {
+                            handleOperator(operator); // Re-run handleOperator to perform calculation
+                            operator = null; // Clear operator after equals
+                            waitingForSecondOperand = false;
+                            firstOperand = null; // Clear first operand for new calculation chain
+                        }
+                        break;
+                    case 'clear':
+                        resetCalculator();
+                        break;
+                }
+
+                updateDisplay();
+            });
+
+            // Initial display update
+            updateDisplay();
+        });
+    </script>
 </body>
 </html>
+

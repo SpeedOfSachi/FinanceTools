@@ -1,30 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Tool 2</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #003366; /* Dark blue background */
-  }
-
-  /* Style for the webpage name */
-  .title {
-    margin-top: 155px; /* Lower the title */
-    font-size: 90px; /* Larger text */
-    color: #fff;
-    text-align: center;
-  }
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annuity Calculator</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Apply a fallback font and ensure the page is always 100% height */
+        html, body {
+            height: 100%;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        }
+    </style>
 </head>
-<body>
+<!-- 
+  Property 1: background-color: #003366 
+  We also set up a flex column layout to center the content.
+-->
+<body class="bg-[#003366] min-h-screen flex flex-col items-center px-4 py-10">
 
-<!-- Webpage Title -->
-<div class="title">Tool 2</div>
+    <!-- 
+      Property 2: Title with specified styles.
+      We use responsive classes to ensure the large text scales down on smaller screens.
+      lg:mt-[155px] -> margin-top: 155px on large screens
+      lg:text-[90px] -> font-size: 90px on large screens
+    -->
+    <h1 class="font-extrabold text-white text-center text-5xl md:text-7xl lg:text-[90px] lg:mt-[155px] mb-12">
+        Annuity Calculator
+    </h1>
+
+    <!-- 
+      Property 3: A grey form.
+      We use Tailwind's bg-gray-100, rounded corners, and shadow for a modern look.
+      The form itself is disabled from submitting traditionally.
+    -->
+    <form class="w-full max-w-2xl bg-gray-100 text-gray-800 rounded-xl shadow-2xl p-8 md:p-12" onsubmit="return false;">
+        <!-- Grid layout for form fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+            
+            <!-- Property 4: Payment (decimal currency) -->
+            <div>
+                <label for="payment" class="block text-sm font-medium text-gray-700 mb-1">Payment ($)</label>
+                <input type="number" id="payment" step="0.01" placeholder="1000.00" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            
+            <!-- Property 5: Discount Rate (percentage) -->
+            <div>
+                <label for="discountRate" class="block text-sm font-medium text-gray-700 mb-1">Discount Rate (%)</label>
+                <input type="number" id="discountRate" step="0.01" placeholder="5.0" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            
+            <!-- Property 5: Growth Rate (percentage) -->
+            <div>
+                <label for="growthRate" class="block text-sm font-medium text-gray-700 mb-1">Growth Rate (%)</label>
+                <input type="number" id="growthRate" step="0.01" placeholder="2.0" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- Property 6: Payment Frequency (dropdown) -->
+            <div>
+                <label for="paymentFrequency" class="block text-sm font-medium text-gray-700 mb-1">Payment Frequency</label>
+                <select id="paymentFrequency" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="annually">Annually</option>
+                    <option value="semi-annually">Semi-Annually</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="daily">Daily</option>
+                </select>
+            </div>
+
+            <!-- Property 8: Number of Periods (integer) -->
+            <div>
+                <label for="periods" class="block text-sm font-medium text-gray-700 mb-1">Number of Periods</label>
+                <input type="number" id="periods" step="1" placeholder="10" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-200 disabled:text-gray-500">
+            </div>
+
+            <!-- Property 7: Perpetuity (checkbox) -->
+            <div class="flex items-center justify-start md:pt-6">
+                <input type="checkbox" id="perpetuity" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="perpetuity" class="ml-2 block text-sm font-medium text-gray-900">Perpetuity</F>
+            </div>
+            
+            <!-- Calculate Button -->
+            <div class="md:col-span-2 mt-4">
+                <button type="button" id="calculateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md shadow-lg transition duration-300 transform hover:scale-105">
+                    Calculate
+                </button>
+            </div>
+
+        </div>
+    </form>
+
+    <!-- 
+      Property 9: Output field "Present Value"
+      This section will be updated by the JavaScript.
+    -->
+    <div id="result" class="mt-12 text-center">
+        <h2 class="text-2xl font-medium text-gray-300">Present Value</h2>
+        <p id="presentValue" class="text-6xl font-bold text-white mt-2">$0.00</p>
+    </div>
+
+    <script>
+        // Wait for the DOM to be fully loaded before running scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Get references to all the interactive elements
+            const paymentEl = document.getElementById('payment');
+            const discountRateEl = document.getElementById('discountRate');
+            const growthRateEl = document.getElementById('growthRate');
+            const paymentFrequencyEl = document.getElementById('paymentFrequency');
+            const perpetuityEl = document.getElementById('perpetuity');
+            const periodsEl = document.getElementById('periods');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const presentValueEl = document.getElementById('presentValue');
+
+            /**
+             * Handles the logic when the "Perpetuity" checkbox is toggled.
+             * Property 8: If Perpetuity is checked, this field does not accept input 
+             * and displays "infinity".
+             */
+            function handlePerpetuityToggle() {
+                if (perpetuityEl.checked) {
+                    // Store 1 (as requested, though true/false is more common)
+                    perpetuityEl.value = '1'; 
+                    periodsEl.disabled = true;
+                    periodsEl.value = ''; // Clear any existing value
+                    periodsEl.placeholder = 'Infinity';
+                } else {
+                    // Store 0
+                    perpetuityEl.value = '0';
+                    periodsEl.disabled = false;
+                    periodsEl.placeholder = '10'; // Reset to default placeholder
+                }
+            }
+
+            /**
+             * Calculates the present value based on the user's formula.
+             */
+            function calculatePresentValue() {
+                // Get and parse all values, providing 0 as a fallback
+                const payment = parseFloat(paymentEl.value) || 0;
+                
+                // Convert percentage inputs to decimals (e.g., 5% -> 0.05)
+                const discountRate = (parseFloat(discountRateEl.value) || 0) / 100;
+                const growthRate = (parseFloat(growthRateEl.value) || 0) / 100;
+
+                // --- Other variables (stored as requested) ---
+                const frequency = paymentFrequencyEl.value;
+                const isPerpetuity = perpetuityEl.checked; // or perpetuityEl.value === '1'
+                const periods = parseInt(periodsEl.value) || 0;
+                
+                // Property 9: Calculate PV based on the specified formula:
+                // Present Value = Payment * (Discount Rate) * (Growth Rate)
+                const presentValue = payment * discountRate * growthRate;
+
+                // Display the formatted result
+                // We use toLocaleString to format it as currency
+                presentValueEl.textContent = presentValue.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                });
+            }
+
+            // --- Event Listeners ---
+            
+            // Listen for changes on the perpetuity checkbox
+            perpetuityEl.addEventListener('change', handlePerpetuityToggle);
+            
+            // Listen for clicks on the calculate button
+            calculateBtn.addEventListener('click', calculatePresentValue);
+
+            // Run the perpetuity toggle once on load in case it's pre-checked
+            // (though it defaults to off)
+            handlePerpetuityToggle();
+        });
+    </script>
 
 </body>
 </html>

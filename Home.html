@@ -9,24 +9,31 @@
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #003366; /* Dark blue background */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 
   /* Style for the webpage name */
   .title {
-    margin-top: 50px;
-    font-size: 48px;
+    margin-top: 80px; /* Lower the title */
+    font-size: 60px; /* Larger text */
     color: #fff;
     text-align: center;
   }
 
-  /* Container for the menu bar, centered horizontally */
+  /* Style for the navigation bar to span entire width */
   .navbar {
     display: flex;
     justify-content: center;
-    margin-top: 50px;
+    width: 100%;
+    margin-top: 40px; /* Increased margin to push menu further down */
+    position: relative;
+  }
+
+  /* Make the menu bar span entire width at the top level and distribute items evenly */
+  .menu-bar {
+    display: flex;
+    width: 100%;
+    justify-content: center; /* Center the menu items */
+    background-color: #002244; /* Ensure menu bar is visible */
   }
 
   /* Style for menu items */
@@ -83,41 +90,43 @@
 <!-- Webpage Title -->
 <div class="title">Financial Tools</div>
 
-<!-- Navigation bar centered -->
+<!-- Menu bar spanning entire width -->
 <div class="navbar">
-  <!-- Tools Menu -->
-  <div class="menu">
-    <a href="#">Tools</a>
-    <div class="dropdown">
-      <a href="https://www.google.com" target="_blank">test1</a>
-      <a href="#">Option 2</a>
-      <a href="#">Option 3</a>
+  <div class="menu-bar">
+    <!-- Tools Menu -->
+    <div class="menu">
+      <a href="#">Tools</a>
+      <div class="dropdown">
+        <a href="https://www.google.com" target="_blank">test1</a>
+        <a href="#">Option 2</a>
+        <a href="#">Option 3</a>
+      </div>
     </div>
-  </div>
 
-  <!-- Reports Menu -->
-  <div class="menu">
-    <a href="#">Reports</a>
-    <div class="dropdown">
-      <a href="#">Report 1</a>
-      <a href="#">Report 2</a>
-      <a href="#">Report 3</a>
+    <!-- Reports Menu -->
+    <div class="menu">
+      <a href="#">Reports</a>
+      <div class="dropdown">
+        <a href="#">Report 1</a>
+        <a href="#">Report 2</a>
+        <a href="#">Report 3</a>
+      </div>
     </div>
-  </div>
 
-  <!-- Data Menu -->
-  <div class="menu">
-    <a href="#">Data</a>
-    <div class="dropdown">
-      <a href="#">Data Option 1</a>
-      <a href="#">Data Option 2</a>
-      <a href="#">Data Option 3</a>
+    <!-- Data Menu -->
+    <div class="menu">
+      <a href="#">Data</a>
+      <div class="dropdown">
+        <a href="#">Data Option 1</a>
+        <a href="#">Data Option 2</a>
+        <a href="#">Data Option 3</a>
+      </div>
     </div>
-  </div>
 
-  <!-- About Menu (no dropdown) -->
-  <div class="menu">
-    <a href="#">About</a>
+    <!-- About Menu (no dropdown) -->
+    <div class="menu">
+      <a href="#">About</a>
+    </div>
   </div>
 </div>
 

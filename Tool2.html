@@ -106,14 +106,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             // Get references to all the interactive elements
-            const paymentEl = document.getElementById('payment');
-            const discountRateEl = document.getElementById('discountRate');
-            const growthRateEl = document.getElementById('growthRate');
-            const paymentFrequencyEl = document.getElementById('paymentFrequency');
-            const perpetuityEl = document.getElementById('perpetuity');
-            const periodsEl = document.getElementById('periods');
-            const calculateBtn = document.getElementById('calculateBtn');
-            const presentValueEl = document.getElementById('presentValue');
+            let paymentEl = document.getElementById('payment');
+            let discountRateEl = document.getElementById('discountRate');
+            let growthRateEl = document.getElementById('growthRate');
+            let paymentFrequencyEl = document.getElementById('paymentFrequency');
+            let perpetuityEl = document.getElementById('perpetuity');
+            let periodsEl = document.getElementById('periods');
+            let calculateBtn = document.getElementById('calculateBtn');
+            let presentValueEl = document.getElementById('presentValue');
 
             /**
              * Handles the logic when the "Perpetuity" checkbox is toggled.
@@ -122,14 +122,13 @@
              */
             function handlePerpetuityToggle() {
                 if (perpetuityEl.checked) {
-                    // Store 1 (as requested, though true/false is more common)
-                    perpetuityEl.value = '1'; 
+                    perpetuityEl.value = true; 
                     periodsEl.disabled = true;
                     periodsEl.value = ''; // Clear any existing value
                     periodsEl.placeholder = 'Infinity';
                 } else {
                     // Store 0
-                    perpetuityEl.value = '0';
+                    perpetuityEl.value = false;
                     periodsEl.disabled = false;
                     periodsEl.placeholder = '10'; // Reset to default placeholder
                 }
@@ -140,27 +139,54 @@
              */
             function calculatePresentValue() {
                 // Get and parse all values, providing 0 as a fallback
-                const payment = parseFloat(paymentEl.value) || 0;
+                let payment = parseFloat(paymentEl.value) || 0;
                 
                 // Convert percentage inputs to decimals (e.g., 5% -> 0.05)
-                const discountRate = (parseFloat(discountRateEl.value) || 0) / 100;
-                const growthRate = (parseFloat(growthRateEl.value) || 0) / 100;
+                let discountRate = (parseFloat(discountRateEl.value) || 0) / 100;
+                let growthRate = (parseFloat(growthRateEl.value) || 0) / 100;
 
-                // --- Other variables (stored as requested) ---
-                const frequency = paymentFrequencyEl.value;
-                const isPerpetuity = perpetuityEl.checked; // or perpetuityEl.value === '1'
-                const periods = parseInt(periodsEl.value) || 0;
+                // --- Other variables ---
+                let frequency = paymentFrequencyEl.value;
+                let frequencyNum = 0;
+                let isPerpetuity = perpetuityEl.checked; //
+                let periods = parseInt(periodsEl.value) || 0;
+                let effDiscount = 0;
                 
-                // Property 9: Calculate PV based on the specified formula:
-                // Present Value = Payment * (Discount Rate) * (Growth Rate)
-                const presentValue = payment * (1 + discountRate) * (1 + growthRate);
-//              perpetuityEl = '0'                
-//                If (true) {
-//                   const presentValue = payment * (1 + discountRate) * (1 + growthRate);
-//                } 
-//                else {
-//                   const presentValue = payment * (1 + discountRate) * (1 + growthRate);
-//                }
+                // Convert frequency to numerical value
+                if (frequency === "annually") {
+                   frequencyNum = 1;
+                } else if (frequency === "semi-annually") {
+                   frequencyNum = 2;
+                } else if (frequency === "quarterly") {
+                   frequencyNum = 4;
+                } else if (frequency === "monthly") {
+                   frequencyNum = 12;
+                } else if (frequency === "weekly") {
+                   frequencyNum = 52;
+                } else if (frequency === "daily") {
+                   frequencyNum = 365;
+                } else {
+                   frequencyNum = 1;
+                }
+
+               effDiscount = ((1 + discountRate) / (1 + growthRate)) ** (1 / frequencyNum) - 1
+ 
+                // Property 9: Calculate PV
+                let presentValue = 0;           
+                if (isPerpetuity) {
+                   if(growthRate >= discountRate) {
+                      presentValue = 1 / 0
+                   } else {
+                      //presentValue = payment * (1 + growthRate) / (discountRate - growthRate);
+                      presentValue = payment / effDiscount;
+                   }
+                } else {
+                      if (growthRate === discountRate) {
+                         presentValue = payment * periods
+                      } else {
+                           presentValue = payment * (1 - (1 + effDiscount) ** (- periods)) / effDiscount
+                      }
+                }
 
                 // Display the formatted result
                 // We use toLocaleString to format it as currency

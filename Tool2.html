@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Annuity Calculator</title>
-    <!-- Load Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Apply a fallback font and ensure the page is always 100% height */
@@ -14,50 +13,36 @@
         }
     </style>
 </head>
-<!-- 
-  Property 1: background-color: #003366 
-  We also set up a flex column layout to center the content.
--->
 <body class="bg-[#003366] min-h-screen flex flex-col items-center px-[10px] py-[4px]">
 
-    <!-- 
-      Property 2: Title with specified styles.
-      We use responsive classes to ensure the large text scales down on smaller screens.
-      lg:mt-[155px] -> margin-top: 155px on large screens
-      lg:text-[90px] -> font-size: 90px on large screens
-    -->
+    <a href="https://www.google.com" target="_blank" class="absolute top-4 left-4 
+       bg-gray-500 hover:bg-gray-600 text-white font-semibold 
+       py-2 px-4 rounded-lg shadow-md 
+       transition duration-150 ease-in-out z-10">
+        Home
+    </a>
     <h1 class="text-white text-center text-5xl md:text-7xl lg:text-[90px] lg:mt-[155px] mb-12">
         Annuity Calculator
     </h1>
 
-    <!-- 
-      Property 3: A grey form.
-      We use Tailwind's bg-gray-100, rounded corners, and shadow for a modern look.
-      The form itself is disabled from submitting traditionally.
-    -->
     <form class="w-full max-w-2xl bg-gray-100 text-gray-800 rounded-xl shadow-2xl p-8 md:p-12" onsubmit="return false;">
-        <!-- Grid layout for form fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
             
-            <!-- Property 4: Payment (decimal currency) -->
             <div>
                 <label for="payment" class="block text-sm font-medium text-gray-700 mb-1">Payment ($)</label>
                 <input type="number" id="payment" step="0.01" placeholder="1000.00" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
             
-            <!-- Property 5: Discount Rate (percentage) -->
             <div>
                 <label for="discountRate" class="block text-sm font-medium text-gray-700 mb-1">Discount Rate (%)</label>
                 <input type="number" id="discountRate" step="0.01" placeholder="5.0" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
             
-            <!-- Property 5: Growth Rate (percentage) -->
             <div>
                 <label for="growthRate" class="block text-sm font-medium text-gray-700 mb-1">Growth Rate (%)</label>
                 <input type="number" id="growthRate" step="0.01" placeholder="2.0" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
-            <!-- Property 6: Payment Frequency (dropdown) -->
             <div>
                 <label for="paymentFrequency" class="block text-sm font-medium text-gray-700 mb-1">Payment Frequency</label>
                 <select id="paymentFrequency" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -70,19 +55,16 @@
                 </select>
             </div>
 
-            <!-- Property 8: Number of Periods (integer) -->
             <div>
                 <label for="periods" class="block text-sm font-medium text-gray-700 mb-1">Number of Periods</label>
                 <input type="number" id="periods" step="1" placeholder="10" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-200 disabled:text-gray-500">
             </div>
 
-            <!-- Property 7: Perpetuity (checkbox) -->
             <div class="flex items-center justify-start md:pt-6">
                 <input type="checkbox" id="perpetuity" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                 <label for="perpetuity" class="ml-2 block text-sm font-medium text-gray-900">Perpetuity</F>
             </div>
             
-            <!-- Calculate Button -->
             <div class="md:col-span-2 mt-4">
                 <button type="button" id="calculateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md shadow-lg transition duration-300 transform hover:scale-105">
                     Calculate
@@ -92,10 +74,6 @@
         </div>
     </form>
 
-    <!-- 
-      Property 9: Output field "Present Value"
-      This section will be updated by the JavaScript.
-    -->
     <div id="result" class="mt-12 text-center">
         <h2 class="text-2xl font-medium text-gray-300">Present Value</h2>
         <p id="presentValue" class="text-6xl font-bold text-white mt-2">$0.00</p>
@@ -169,22 +147,22 @@
                    frequencyNum = 1;
                 }
 
-               effDiscount = ((1 + discountRate) / (1 + growthRate)) ** (1 / frequencyNum) - 1
+                effDiscount = ((1 + discountRate) / (1 + growthRate)) ** (1 / frequencyNum) - 1
  
                 // Property 9: Calculate PV
-                let presentValue = 0;           
+                let presentValue = 0;            
                 if (isPerpetuity) {
                    if(growthRate >= discountRate) {
-                      presentValue = 1 / 0
+                     presentValue = 1 / 0
                    } else {
-                      //presentValue = payment * (1 + growthRate) / (discountRate - growthRate);
-                      presentValue = payment / effDiscount;
+                     //presentValue = payment * (1 + growthRate) / (discountRate - growthRate);
+                     presentValue = payment / effDiscount;
                    }
                 } else {
-                      if (growthRate === discountRate) {
-                         presentValue = payment * periods
+                     if (growthRate === discountRate) {
+                          presentValue = payment * periods
                       } else {
-                           presentValue = payment * (1 - (1 + effDiscount) ** (- periods)) / effDiscount
+                            presentValue = payment * (1 - (1 + effDiscount) ** (- periods)) / effDiscount
                       }
                 }
 

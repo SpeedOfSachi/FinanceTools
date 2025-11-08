@@ -94,36 +94,27 @@
                 let amortizationYears = parseInt(amortizationEl.value) || 0; 
 
                 // Convert frequency to numerical value
-                if (frequency === "annually") {
-                   frequencyNum = 1;
-                } else if (frequency === "semi-annually") {
-                   frequencyNum = 2;
-                } else if (frequency === "quarterly") {
-                   frequencyNum = 4;
-                } else if (frequency === "monthly") {
+                if (frequency === "monthly") {
                    frequencyNum = 12;
+                } else if (frequency === "semi-monthly") {
+                   frequencyNum = 24;
+                } else if (frequency === "bi-weekly") {
+                   frequencyNum = 26;
                 } else if (frequency === "weekly") {
                    frequencyNum = 52;
-                } else if (frequency === "daily") {
-                   frequencyNum = 365;
                 } else {
-                   frequencyNum = 1;
+                   frequencyNum = 12;
                 }
                 
                 // For a typical mortgage calculator (calculating Payment/PMT from Balance/PV):
-                // let totalPeriods = amortizationYears * frequencyNum;
-                // let periodicRate = interestRate / frequencyNum;
-                // let monthlyPayment = balance * (periodicRate * Math.pow(1 + periodicRate, totalPeriods)) / (Math.pow(1 + periodicRate, totalPeriods) - 1);
+                let totalPeriods = amortizationYears * frequencyNum;
+                let periodicRate = interestRate / frequencyNum;
+                let monthlyPayment = 0
 
-                // Calculate PV (using a simplified calculation as the original was a placeholder)
-                let calculatedResult = 0;         
-                
-                // *** IMPORTANT NOTE ***
-                // Keeping the original placeholder logic, but using 'balance' instead of 'payment'
                 if (true) {
-                     calculatedResult = balance * amortizationYears 
+                     calculatedResult = balance * (periodicRate * Math.pow(1 + periodicRate, totalPeriods)) / (Math.pow(1 + periodicRate, totalPeriods) - 1);
                 } else {
-                     calculatedResult = balance * amortizationYears
+                     calculatedResult = balance * (periodicRate * Math.pow(1 + periodicRate, totalPeriods)) / (Math.pow(1 + periodicRate, totalPeriods) - 1);
                 }
                 
                 // Display the formatted result

@@ -11,7 +11,7 @@
             height: 100%;
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
         }
-    </style>
+    </style>\
 </head>
 <body class="bg-[#003366] min-h-screen flex flex-col items-center px-[10px] py-[4px]">
 
@@ -95,7 +95,6 @@
 
             /**
              * Handles the logic when the "Perpetuity" checkbox is toggled.
-             * ❗ IMPORTANT: The calculation is REMOVED from here.
              */
             function handlePerpetuityToggle() {
                 if (perpetuityEl.checked) {
@@ -112,7 +111,6 @@
                         periodsEl.value = DEFAULT_PERIODS;
                     }
                 }
-                // calculatePresentValue(); // ⬅️ THIS LINE IS REMOVED
             }
 
             /**
@@ -153,13 +151,19 @@
                 // Calculate PV
                 let presentValue = 0;            
                 if (isPerpetuity) {
-                   if(discountRate <= growthRate) { // Switched inequality to handle the "Error" case correctly
-                     presentValue = Infinity // Represents "Error" or "Not defined" in this context
+                   if (discountRate > growthRate) {
+                      presentValue = payment / effDiscount;
                    } else {
-                     presentValue = payment / effDiscount;
+                      if (payment === 0) {
+                         presentValue = 0;
+                      } else if (payment > 0) {
+                         presentValue = Infinity
+                      } else if (payment < 0) {
+                         presentValue = -Infinity
+                      }
                    }
                 } else {
-                     if (discountRate === growthRate) {
+                     if (growthRate === discountRate) {
                           presentValue = payment * periods
                       } else {
                             presentValue = payment * (1 - (1 + effDiscount) ** (- periods)) / effDiscount

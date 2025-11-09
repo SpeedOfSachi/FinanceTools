@@ -77,12 +77,12 @@
 
         <div class="flex flex-col items-center justify-center">
             <h2 class="text-xl font-medium text-gray-300">Period Payment</h2>
-            <p id="periodPaymentOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
+            <p id="periodPaymentSavingsOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
         </div>
         
         <div class="flex flex-col items-center justify-center">
             <h2 class="text-xl font-medium text-gray-300">Total Interest</h2>
-            <p id="totalInterestOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
+            <p id="totalInterestSavingsOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
         </div>
     </div>
     <script>
@@ -97,8 +97,8 @@
             
             // Updated output element IDs
             let totalPeriodsOutputEl = document.getElementById('totalPeriodsOutput'); // New
-            let periodPaymentOutputEl = document.getElementById('periodPaymentOutput'); // Renamed/Replaced
-            let totalInterestOutputEl = document.getElementById('totalInterestOutput'); // New
+            let periodPaymentSavingsOutputEl = document.getElementById('periodPaymentSavingsOutput'); // Renamed/Replaced
+            let totalInterestSavingsOutputEl = document.getElementById('totalInterestSavingsOutput'); // New
 
             /**
              * Calculates the payment, total periods, and total interest.
@@ -131,39 +131,58 @@
                 let totalPeriods = Math.floor(amortizationYears * frequencyAnn);
                 let periodicRate1 = interestRate1 / frequencyAnn;
                 let periodicRate2 = interestRate2 / frequencyAnn;
-                let periodicPayment = 0;
-                let totalInterest = 0;
+                let periodicPaymentSavings = 0;
+                let periodicPayment1 = 0;
+                let periodicPayment2 = 0;
+                let totalInterestSavings = 0;
+                let totalInterest1 = 0;
+                let totalInterest2 = 0;
 
+                // Calculate Mortgage 1
                 if (totalPeriods === 0) {
-                   periodicPayment = balance
+                   periodicPayment1 = balance
                    totalInterest = 0
                 } else if (periodicRate1 === 0) {
-                   periodicPayment = balance / totalPeriods
-                   totalInterest = 0
+                   periodicPayment1 = balance / totalPeriods
+                   totalInterest1 = 0
                 } else {
-                   periodicPayment = balance* periodicRate1 / (1 - (1 + periodicRate1)**(-totalPeriods))
-                   totalInterest = periodicPayment * totalPeriods - balance
+                   periodicPayment1 = balance* periodicRate1 / (1 - (1 + periodicRate1)**(-totalPeriods))
+                   totalInterest1 = periodicPayment1 * totalPeriods - balance
                 }
 
+                // Calculate Mortgage 2
+                if (totalPeriods === 0) {
+                   periodicPayment2 = balance
+                   totalInterest = 0
+                } else if (periodicRate1 === 0) {
+                   periodicPayment2 = balance / totalPeriods
+                   totalInterest1 = 0
+                } else {
+                   periodicPayment2 = balance* periodicRate2 / (1 - (1 + periodicRate2)**(-totalPeriods))
+                   totalInterest2 = periodicPayment2 * totalPeriods - balance
+                }
+
+                // Calculate Savings
+                   totalInterestSavings = totalInterest1 - totalInterest2
                 // --- Display Results ---
 
-                // 1. Total Periods (Number, no currency)
+                // 1. Period Payment Savings
+                periodPaymentSavingsOutputEl.textContent = periodicPayment1.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                 });
+
+                // 2. Total Periods (Number, no currency)
                 totalPeriodsOutputEl.textContent = totalPeriods.toLocaleString('en-US');
 
-                // 2. Period Payment (Currency)
-                periodPaymentOutputEl.textContent = periodicPayment.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-
                 // 3. Total Interest (Currency)
-                totalInterestOutputEl.textContent = totalInterest.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
+                totalInterestSavingsOutputEl.textContent = totalInterestSavings.toLocaleString('en-US', {
+                   style: 'currency',
+                   currency: 'USD',
+                   minimumFractionDigits: 2,
+                   maximumFractionDigits: 2
                 });
             }
 

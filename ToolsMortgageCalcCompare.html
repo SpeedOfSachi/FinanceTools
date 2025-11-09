@@ -126,8 +126,7 @@
                    frequencyAnn = 12; 
                 }
                 
-                // --- Mortgage Calculation ---
-                
+                // Mortgage Variables
                 let totalPeriods = Math.floor(amortizationYears * frequencyAnn);
                 let periodicRate1 = interestRate1 / frequencyAnn;
                 let periodicRate2 = interestRate2 / frequencyAnn;
@@ -142,7 +141,7 @@
                 // Calculate Mortgage 1
                 if (totalPeriods === 0) {
                    periodicPayment1 = balance
-                   totalInterest = 0
+                   totalInterest1 = 0
                 } else if (periodicRate1 === 0) {
                    periodicPayment1 = balance / totalPeriods
                    totalInterest1 = 0
@@ -154,10 +153,10 @@
                 // Calculate Mortgage 2
                 if (totalPeriods === 0) {
                    periodicPayment2 = balance
-                   totalInterest = 0
+                   totalInterest2 = 0
                 } else if (periodicRate2 === 0) {
                    periodicPayment2 = balance / totalPeriods
-                   totalInterest1 = 0
+                   totalInterest2 = 0
                 } else {
                    periodicPayment2 = balance* periodicRate2 / (1 - (1 + periodicRate2)**(-totalPeriods))
                    totalInterest2 = periodicPayment2 * totalPeriods - balance
@@ -167,9 +166,19 @@
                 totalInterestSavings = Math.abs(totalInterest1 - totalInterest2)
                 periodicPaymentSavings = Math.abs(periodicPayment1 - periodicPayment2)
                 if (interestRate1 > interestRate2) {
-                   totalSavingsPV = periodicPayment1 * (1 - (1 + periodicRate2)**(-totalPeriods)) / periodicRate2 - balance
+                   if (interestRate2 === 0) {
+                      totalSavingsPV = periodicPayment1 * totalPeriods - balance
+                   } else {
+                      totalSavingsPV = periodicPayment1 * (1 - (1 + periodicRate2)**(-totalPeriods)) / periodicRate2 - balance
+                   }
+                } else if (interestRate2 > interestRate1) {
+                   if (interestRate1 === 0) {
+                      totalSavingsPV = periodicPayment2 * totalPeriods - balance
+                   } else {
+                      totalSavingsPV = periodicPayment2 * (1 - (1 + periodicRate1)**(-totalPeriods)) / periodicRate1 - balance
+                   }
                 } else {
-                   totalSavingsPV = periodicPayment2 * (1 - (1 + periodicRate1)**(-totalPeriods)) / periodicRate1 - balance
+                   totalSavingsPV = 0
                 }
 
                 // --- Display Results ---

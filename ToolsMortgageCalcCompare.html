@@ -25,42 +25,48 @@
         Mortgage Calculator
     </h1>
 
-    <form class="w-full max-w-2xl bg-gray-100 text-gray-800 rounded-xl shadow-2xl p-8 md:p-12" onsubmit="return false;">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-            
-            <div>
-                <label for="balance" class="block text-sm font-medium text-gray-700 mb-1">Balance ($)</label>
-                <input type="number" id="balance" step="0.01" value="100000" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            
-            <div>
-                <label for="interestRate" class="block text-sm font-medium text-gray-700 mb-1">Interest Rate (%)</label>
-                <input type="number" id="interestRate" step="0.01" value="4" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            
-            <div>
-                <label for="amortization" class="block text-sm font-medium text-gray-700 mb-1">Amortization (years)</label>
-                <input type="number" id="amortization" step="1" value="25" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white">
-            </div>
-
-            <div>
-                <label for="paymentFrequency" class="block text-sm font-medium text-gray-700 mb-1">Payment Frequency</label>
-                <select id="paymentFrequency" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <option value="monthly">Monthly</option>
-                    <option value="semi-monthly">Semi-Monthly</option>
-                    <option value="bi-weekly">Bi-Weekly</option>
-                    <option value="weekly">Weekly</option>
-                </select>
-            </div>
-            
-            <div class="md:col-span-2 mt-4">
-                <button type="button" id="calculateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md shadow-lg transition duration-300 transform hover:scale-105">
-                    Calculate
-                </button>
-            </div>
-
+  <form class="w-full max-w-2xl bg-gray-100 text-gray-800 rounded-xl shadow-2xl p-8 md:p-12" onsubmit="return false;">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+        
+        <div>
+            <label for="balance" class="block text-sm font-medium text-gray-700 mb-1">Balance ($)</label>
+            <input type="number" id="balance" step="0.01" value="100000" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
-    </form>
+        
+        <div>
+            <label for="interestRate1" class="block text-sm font-medium text-gray-700 mb-1">Interest Rate 1 (%)</label>
+            <input type="number" id="interestRate1" step="0.01" value="4" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div>
+            <label for="amortization" class="block text-sm font-medium text-gray-700 mb-1">Amortization (years)</label>
+            <input type="number" id="amortization" step="1" value="25" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white">
+        </div>
+
+        <div>
+            <label for="interestRate2" class="block text-sm font-medium text-gray-700 mb-1">Interest Rate 2 (%)</label>
+            <input type="number" id="interestRate2" step="0.01" value="4.5" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+
+        <div>
+            <label for="paymentFrequency" class="block text-sm font-medium text-gray-700 mb-1">Payment Frequency</label>
+            <select id="paymentFrequency" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <option value="monthly">Monthly</option>
+                <option value="semi-monthly">Semi-Monthly</option>
+                <option value="bi-weekly">Bi-Weekly</option>
+                <option value="weekly">Weekly</option>
+            </select>
+        </div>
+        
+        <div class="md:col-span-2 mt-4">
+            <button type="button" id="calculateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md shadow-lg transition duration-300 transform hover:scale-105">
+                Calculate
+            </button>
+        </div>
+
+    </div>
+</form>
 
     <div id="result" class="mt-12 w-full max-w-4xl grid grid-cols-3 gap-4 text-center">
 
@@ -83,7 +89,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             let balanceEl = document.getElementById('balance'); 
-            let interestRateEl = document.getElementById('interestRate'); 
+            let interestRate1El = document.getElementById('interestRate1'); 
+            let interestRate2El = document.getElementById('interestRate2'); 
             let paymentFrequencyEl = document.getElementById('paymentFrequency');
             let amortizationEl = document.getElementById('amortization'); 
             let calculateBtn = document.getElementById('calculateBtn');
@@ -99,7 +106,8 @@
             function calculateMortgageMetrics() {
                 // Get and parse all values
                 let balance = parseFloat(balanceEl.value) || 0; 
-                let interestRate = (parseFloat(interestRateEl.value) || 0) / 100;
+                let interestRate1 = (parseFloat(interestRate1El.value) || 0) / 100;
+                let interestRate2 = (parseFloat(interestRate2El.value) || 0) / 100;
                 let frequency = paymentFrequencyEl.value;
                 let frequencyAnn = 0;
                 let amortizationYears = parseFloat(amortizationEl.value) || 0; 
@@ -121,18 +129,19 @@
                 // --- Mortgage Calculation ---
                 
                 let totalPeriods = Math.floor(amortizationYears * frequencyAnn);
-                let periodicRate = interestRate / frequencyAnn;
+                let periodicRate1 = interestRate1 / frequencyAnn;
+                let periodicRate2 = interestRate2 / frequencyAnn;
                 let periodicPayment = 0;
                 let totalInterest = 0;
 
                 if (totalPeriods === 0) {
                    periodicPayment = balance
                    totalInterest = 0
-                } else if (periodicRate === 0) {
+                } else if (periodicRate1 === 0) {
                    periodicPayment = balance / totalPeriods
                    totalInterest = 0
                 } else {
-                   periodicPayment = balance* periodicRate / (1 - (1 + periodicRate)**(-totalPeriods))
+                   periodicPayment = balance* periodicRate1 / (1 - (1 + periodicRate1)**(-totalPeriods))
                    totalInterest = periodicPayment * totalPeriods - balance
                 }
 

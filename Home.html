@@ -99,30 +99,37 @@
     /* Stack the navbar items vertically on small screens */
     .menu-bar {
       flex-direction: column;
-      align-items: center;
-      margin-top: 20px; /* Reduce the spacing between title and navbar */
+      align-items: stretch; /* UPDATED: Stretches items to full width */
+      margin-top: 20px; 
+      width: 100%;
     }
 
     .menu {
-      margin: 5px 0; /* Smaller margin between menu items */
+      margin: 0; /* UPDATED: Removed side margin so it touches edges */
+      width: 100%; /* UPDATED: Forces container to be full width */
+      border-bottom: 1px solid #004080; /* Optional: adds a separator line */
     }
 
     .menu > a {
       width: 100%; /* Make menu items span full width */
       font-size: 18px;
       height: 50px;
+      box-sizing: border-box; /* Ensures padding doesn't break width */
     }
 
     .dropdown {
       position: static; /* Make dropdown appear directly below the menu item */
+      width: 100%; /* UPDATED: explicit full width */
       min-width: 100%;
     }
 
     /* Make the dropdown links full-width on mobile */
     .dropdown a {
       width: 100%;
-      padding: 10px 20px; /* Adjust padding */
-      font-size: 16px; /* Smaller font for dropdown items */
+      padding: 15px 0; /* Adjust padding, centered text looks better with top/bottom padding */
+      text-align: center; /* Optional: centers dropdown text on mobile */
+      font-size: 16px; 
+      box-sizing: border-box;
     }
   }
 
@@ -139,20 +146,17 @@
     }
 
     .dropdown a {
-      font-size: 14px; /* Even smaller font size for dropdown items */
+      font-size: 14px; 
     }
   }
 </style>
 </head>
 <body>
 
-<!-- Webpage Title -->
 <div class="title">Financial Tools</div>
 
-<!-- Menu bar spanning entire width -->
 <div class="navbar">
   <div class="menu-bar">
-    <!-- Tools Menu -->
     <div class="menu">
       <a href="#">Tools</a>
       <div class="dropdown">
@@ -163,7 +167,6 @@
       </div>
     </div>
 
-    <!-- Reports Menu -->
     <div class="menu">
       <a href="#">Reports</a>
       <div class="dropdown">
@@ -173,7 +176,6 @@
       </div>
     </div>
 
-    <!-- Data Menu -->
     <div class="menu">
       <a href="#">Data</a>
       <div class="dropdown">
@@ -183,7 +185,6 @@
       </div>
     </div>
 
-    <!-- About Menu (no dropdown) -->
     <div class="menu">
       <a href="#">About</a>
     </div>

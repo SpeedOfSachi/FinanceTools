@@ -22,7 +22,7 @@
         Home
     </a>
     <h1 class="text-white text-center text-3xl sm:text-4xl mt-16 mb-6 md:text-6xl mt-16 mb-6 lg:text-[70px] mt-12 mb-6">
-        Rent Vs Buy [IN PROGRESS]
+        Rent Vs Buy [Beta]
     </h1>
 
   <form class="w-full max-w-2xl bg-gray-100 text-gray-800 rounded-xl shadow-2xl p-8 md:p-12" onsubmit="return false;">
@@ -89,23 +89,24 @@
    <div id="result" class="mt-12 w-full max-w-4xl grid grid-cols-1 sm:grid-cols-3 gap-y-8 sm:gap-4 text-center">
 
         <div class="flex flex-col items-center justify-center">
-            <h2 class="text-xl font-medium text-gray-300">Savings per Payment</h2>
-            <p id="periodPaymentSavingsOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
+            <h2 class="text-xl font-medium text-gray-300">Networth Renter</h2>
+            <p id="NetworthRenter" class="text-4xl font-bold text-white mt-2">$0.00</p>
         </div>
 
         <div class="flex flex-col items-center justify-center">
-            <h2 class="text-xl font-medium text-gray-300">Total PV Savings</h2>
-            <p id="totalSavingsPvOutput" class="text-4xl font-bold text-white mt-2">0</p>
+            <h2 class="text-xl font-medium text-gray-300">Networth Homeowner</h2>
+            <p id="NetworthHomeowner" class="text-4xl font-bold text-white mt-2">0</p>
         </div>
 
         <div class="flex flex-col items-center justify-center">
-            <h2 class="text-xl font-medium text-gray-300">Total Interest Savings</h2>
-            <p id="totalInterestSavingsOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
+            <h2 class="text-xl font-medium text-gray-300">Difference</h2>
+            <p id="Difference" class="text-4xl font-bold text-white mt-2">$0.00</p>
         </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
+            //Input Fields
             let HousePriceEl = document.getElementById('HousePrice');
             let DownPaymentEl = document.getElementById('DownPayment');
             let MortgageRateEl = document.getElementById('MortgageRate'); 
@@ -118,117 +119,120 @@
             let RentInflationEl = document.getElementById('RentInflation'); 
             let calculateBtn = document.getElementById('calculateBtn');
             
-            // Updated output element IDs
-            let totalSavingsPvOutputEl = document.getElementById('totalSavingsPvOutput'); // New
-            let periodPaymentSavingsOutputEl = document.getElementById('periodPaymentSavingsOutput'); // Renamed/Replaced
-            let totalInterestSavingsOutputEl = document.getElementById('totalInterestSavingsOutput'); // New
+            //Output Fields
+            let NetworthRenterEl = document.getElementById('NetworthRenter');
+            let NetworthHomeownerEl = document.getElementById('NetworthHomeowner');
+            let DifferenceEl = document.getElementById('Difference');
 
             /**
              * Calculates the payment, total periods, and total interest.
              */
             function calculateMortgageMetrics() {
                 // Get and parse all values
-                let balance = parseFloat(balanceEl.value) || 0; 
-                let interestRate1 = (parseFloat(interestRate1El.value) || 0) / 100;
-                let interestRate2 = (parseFloat(interestRate2El.value) || 0) / 100;
-                let frequency = paymentFrequencyEl.value;
-                let frequencyAnn = 0;
-                let amortizationYears = parseFloat(amortizationEl.value) || 0; 
-
-                // Determine annual payment frequency
-                if (frequency === "monthly") {
-                   frequencyAnn = 12;
-                } else if (frequency === "semi-monthly") {
-                   frequencyAnn = 24;
-                } else if (frequency === "bi-weekly") {
-                   frequencyAnn = 26;
-                } else if (frequency === "weekly") {
-                   frequencyAnn = 52;
-                } else {
-                   // Defaulting to monthly
-                   frequencyAnn = 12; 
-                }
+                let HousePrice = parseFloat(HousePriceEl.value) || 0;
+                let DownPayment = (parseFloat(DownPaymentEl.value) || 0) / 100;
+                let MortgageRate = (parseFloat(MortgageRateEl.value) || 0) / 100;
+                let AmortizationYears = (parseFloat(AmortizationEl.value) || 0); 
+                let HouseAppreciation = (parseFloat(HouseAppreciationEl.value) || 0) / 100;
+                let UpkeepCost = (parseFloat(UpkeepCostEl.value) || 0) / 100;
+                let PropertyTax = (parseFloat(PropertyTaxEl.value) || 0) / 100;
+                let PortfolioReturn = (parseFloat(PortfolioReturnEl.value) || 0) / 100;
+                let MonthlyRent = parseFloat(MonthlyRentEl.value) || 0;
+                let RentInflation = (parseFloat(RentInflationEl.value) || 0) / 100;
                 
-                // Mortgage Variables
-                let totalPeriods = Math.floor(amortizationYears * frequencyAnn);
-                let periodicRate1 = interestRate1 / frequencyAnn;
-                let periodicRate2 = interestRate2 / frequencyAnn;
-                let periodicPayment1 = 0;
-                let periodicPayment2 = 0;
-                let totalInterest1 = 0;
-                let totalInterest2 = 0;
-                let periodicPaymentSavings = 0;
-                let totalInterestSavings = 0;
-                let totalSavingsPV = 0;
+                // Homeowner Variables
+                let NetworthHomeowner_t = 0;
+                let NetworthRenter_t = 0;
+                let Portfolio_t = 0;
+                let PortfolioGain_t = 0;
+                let Difference_t = 0;
+                let HousePrice_t = 0;
+                let Debt_t = 0;
+                let HouseFees_t = 0;
+                let Rent_t = 0;
+                let DownPaymentAmount = DownPayment * HousePrice
+                let DebtAmount = HousePrice - DownPaymentAmount
+                let totalPeriods = Math.floor(AmortizationYears * 12);
+                let periodicMortgageRate = MortgageRate / 12;
+                let periodicHouseAppreciation = (1 + HouseAppreciation)**(1/12) - 1;
+                let periodicUpkeepCost = (1 + UpkeepCost)**(1/12) - 1;
+                let periodicPropertyTax = (1 + PropertyTax)**(1/12) - 1;
+                let periodicMortgage = DebtAmount* periodicMortgageRate / (1 - (1 + periodicMortgageRate)**(-totalPeriods))
+                let periodicPortfolioReturn = (1 + PortfolioReturn)**(1/12) - 1;
+                let periodicRentInflation = (1 + RentInflation)**(1/12) - 1;
 
-                // Calculate Mortgage 1
-                if (totalPeriods === 0) {
-                   periodicPayment1 = balance
-                   totalInterest1 = 0
-                } else if (periodicRate1 === 0) {
-                   periodicPayment1 = balance / totalPeriods
-                   totalInterest1 = 0
+                // Calculate Homeowner Networth
+               
+                // ----- Time zero -----
+                // Homeowner
+                NetworthHomeowner_t = DownPaymentAmount
+                HousePrice_t = HousePrice
+                Debt_t = DebtAmount
+                HouseFees_t = 0
+                // Renter
+                Rent_t = MonthlyRent
+                NetworthRenter_t = -Rent_t
+                PortfolioGain_t = NetworthRenter_t + DownPaymentAmount
+                Portfolio_t = PortfolioGain_t
+                // Equalize cashflow
+                if (Portfolio_t > 0) {
+                   NetworthRenter_t = NetworthRenter_t + PortfolioGain_t
                 } else {
-                   periodicPayment1 = balance* periodicRate1 / (1 - (1 + periodicRate1)**(-totalPeriods))
-                   totalInterest1 = periodicPayment1 * totalPeriods - balance
+                   NetworthHomeowner_t = NetworthHomeowner_t - PortfolioGain_t
+                }
+                Difference_t = Math.abs(NetworthRenter_t - NetworthHomeowner_t)
+
+                // ----- Time 1 to n -----
+                for (let i = 1; i <= totalPeriods; i++) {
+                   // Homeowner
+                   Debt_t = Debt_t*(1 + periodicMortgageRate) - periodicMortgage
+                   HousePrice_t = HousePrice_t*(1 + periodicHouseAppreciation)
+                   HouseFees_t = HousePrice_t*(periodicUpkeepCost + periodicPropertyTax)
+                   NetworthHomeowner_t = HousePrice_t - Debt_t - HouseFees_t
+                   // Renter
+                   Rent_t = Rent_t*(1 + periodicRentInflation)
+                   NetworthRenter_t  = NetworthRenter_t - Rent_t
+                   // Equalize cashflow
+                   PortfolioGain_t = Portfolio_t*periodicPortfolioReturn + periodicMortgage + HouseFees_t - Rent_t
+                   Portfolio_t = Portfolio_t + PortfolioGain_t
+                   if (Portfolio_t > 0) {
+                      NetworthRenter_t = NetworthRenter_t + PortfolioGain_t
+                   } else {
+                      NetworthHomeowner_t = NetworthHomeowner_t - PortfolioGain_t
+                   }
+                   Difference_t = Math.abs(NetworthRenter_t - NetworthHomeowner_t)
                 }
 
-                // Calculate Mortgage 2
+                // test code
                 if (totalPeriods === 0) {
-                   periodicPayment2 = balance
-                   totalInterest2 = 0
-                } else if (periodicRate2 === 0) {
-                   periodicPayment2 = balance / totalPeriods
-                   totalInterest2 = 0
+                } else if (totalPeriods === 0) {
                 } else {
-                   periodicPayment2 = balance* periodicRate2 / (1 - (1 + periodicRate2)**(-totalPeriods))
-                   totalInterest2 = periodicPayment2 * totalPeriods - balance
-                }
-
-                // Calculate Savings
-                totalInterestSavings = Math.abs(totalInterest1 - totalInterest2)
-                periodicPaymentSavings = Math.abs(periodicPayment1 - periodicPayment2)
-                if (interestRate1 > interestRate2) {
-                   if (interestRate2 === 0) {
-                      totalSavingsPV = periodicPayment1 * totalPeriods - balance
-                   } else {
-                      totalSavingsPV = periodicPayment1 * (1 - (1 + periodicRate2)**(-totalPeriods)) / periodicRate2 - balance
-                   }
-                } else if (interestRate2 > interestRate1) {
-                   if (interestRate1 === 0) {
-                      totalSavingsPV = periodicPayment2 * totalPeriods - balance
-                   } else {
-                      totalSavingsPV = periodicPayment2 * (1 - (1 + periodicRate1)**(-totalPeriods)) / periodicRate1 - balance
-                   }
-                } else {
-                   totalSavingsPV = 0
                 }
 
                 // --- Display Results ---
-
-                // 1. Period Payment Savings
-                periodPaymentSavingsOutputEl.textContent = periodicPaymentSavings.toLocaleString('en-US', {
+                // 1. Networth Homeowner
+                NetworthRenterEl.textContent = NetworthRenter_t.toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                  });
 
-                // 2. Total Interest Savings
-                totalInterestSavingsOutputEl.textContent = totalInterestSavings.toLocaleString('en-US', {
-                   style: 'currency',
-                   currency: 'USD',
-                   minimumFractionDigits: 2,
-                   maximumFractionDigits: 2
-                });
+                // 2. Networth Homeowner
+                NetworthHomeownerEl.textContent = NetworthHomeowner_t.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                 });
 
-                // 3. Total Interest (Currency)
-                totalSavingsPvOutputEl.textContent = totalSavingsPV.toLocaleString('en-US', {
-                   style: 'currency',
-                   currency: 'USD',
-                   minimumFractionDigits: 2,
-                   maximumFractionDigits: 2
-                });
+                // 3. Difference
+                DifferenceEl.textContent = Difference_t.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                 });
             }
 
             // --- Event Listeners ---

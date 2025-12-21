@@ -124,11 +124,10 @@
             let NetworthHomeownerEl = document.getElementById('NetworthHomeowner');
             let DifferenceEl = document.getElementById('Difference');
 
-            /**
-             * Calculates the payment, total periods, and total interest.
-             */
+            // Calculates the payment, total periods, and total interest.
+
             function calculateMortgageMetrics() {
-                // Get and parse all values
+                // Input values - standardize
                 let HousePrice = parseFloat(HousePriceEl.value) || 0;
                 let DownPayment = (parseFloat(DownPaymentEl.value) || 0) / 100;
                 let MortgageRate = (parseFloat(MortgageRateEl.value) || 0) / 100;
@@ -140,16 +139,24 @@
                 let MonthlyRent = parseFloat(MonthlyRentEl.value) || 0;
                 let RentInflation = (parseFloat(RentInflationEl.value) || 0) / 100;
                 
-                // Homeowner Variables
-                let NetworthHomeowner_t = 0;
-                let NetworthRenter_t = 0;
-                let Portfolio_t = 0;
-                let PortfolioGain_t = 0;
+                // Variables
+                let NetworthHouse_t = 0;  //networth from house related value/expenses only
+                let NetworthRent_t = 0; //networth from renting related expenses only
+                let NetworthHomeowner_t = 0; //total networth
+                let NetworthRenter_t = 0;  //total networth
+                let PortfolioRenter_t = 0;
+                let PortfolioRenterGain_t = 0;
+                let PortfolioHomeowner_t = 0;
+                let PortfolioHomeownerGain_t = 0;
                 let Difference_t = 0;
                 let HousePrice_t = 0;
                 let Debt_t = 0;
                 let HouseFees_t = 0;
                 let Rent_t = 0;
+                let CashflowRent_t = 0;
+                let CashflowHouse_t = 0;
+                let CashflowDifference_t = 0;
+                let CashflowTotal_t = 0;
                 let DownPaymentAmount = DownPayment * HousePrice
                 let DebtAmount = HousePrice - DownPaymentAmount
                 let totalPeriods = Math.floor(AmortizationYears * 12);
@@ -157,29 +164,37 @@
                 let periodicHouseAppreciation = (1 + HouseAppreciation)**(1/12) - 1;
                 let periodicUpkeepCost = (1 + UpkeepCost)**(1/12) - 1;
                 let periodicPropertyTax = (1 + PropertyTax)**(1/12) - 1;
-                let periodicMortgage = DebtAmount* periodicMortgageRate / (1 - (1 + periodicMortgageRate)**(-totalPeriods))
                 let periodicPortfolioReturn = (1 + PortfolioReturn)**(1/12) - 1;
                 let periodicRentInflation = (1 + RentInflation)**(1/12) - 1;
+                let periodicMortgage = DebtAmount* periodicMortgageRate / (1 - (1 + periodicMortgageRate)**(-totalPeriods))
 
-                // Calculate Homeowner Networth
+                // Calculate Networth
                
                 // ----- Time zero -----
                 // Homeowner
-                NetworthHomeowner_t = DownPaymentAmount
+                Debt_t = DebtAmount  
                 HousePrice_t = HousePrice
-                Debt_t = DebtAmount
                 HouseFees_t = 0
+                CashflowHouse_t = -DownPaymentAmount - HouseFees_t
+                NetworthHouse_t = DownPaymentAmount  - HouseFees_t
                 // Renter
                 Rent_t = MonthlyRent
-                NetworthRenter_t = -Rent_t
-                PortfolioGain_t = NetworthRenter_t + DownPaymentAmount
-                Portfolio_t = PortfolioGain_t
-                // Equalize cashflow
-                if (Portfolio_t > 0) {
-                   NetworthRenter_t = NetworthRenter_t + PortfolioGain_t
+                CashflowRent_t = -Rent_t
+                NetworthRent_t = NetworthRent_t + CashflowRent_t
+                // Portfolio return & equalize cashflows             
+                CashflowDifference_t = CashflowRent_t - CashflowHouse_t  //positive CashflowDifference means homeowner paid made than renter, and viceversa
+                if (CashflowDifference_t >= 0) {
+                   CashflowTotal_t = CashflowTotal_t + CashflowHouse_t
+                   PortfolioRenterGain_t = CashflowDifference_t
                 } else {
-                   NetworthHomeowner_t = NetworthHomeowner_t - PortfolioGain_t
+                   CashflowTotal_t = CashflowTotal_t + CashflowRent_t
+                   PortfolioHomeownerGain_t = -CashflowDifference_t
                 }
+                PortfolioHomeowner_t =  PortfolioHomeowner_t + PortfolioHomeownerGain_t
+                PortfolioRenter_t =  PortfolioRenter_t + PortfolioRenterGain_t
+                // Final Networth
+                NetworthHomeowner_t = NetworthHouse_t + PortfolioHomeowner_t
+                NetworthRenter_t = NetworthRent_t + PortfolioRenter_t
                 Difference_t = Math.abs(NetworthRenter_t - NetworthHomeowner_t)
 
                 // ----- Time 1 to n -----
@@ -188,18 +203,29 @@
                    Debt_t = Debt_t*(1 + periodicMortgageRate) - periodicMortgage
                    HousePrice_t = HousePrice_t*(1 + periodicHouseAppreciation)
                    HouseFees_t = HousePrice_t*(periodicUpkeepCost + periodicPropertyTax)
-                   NetworthHomeowner_t = HousePrice_t - Debt_t - HouseFees_t
+                   CashflowHouse_t = -periodicMortgage - HouseFees_t
+                   NetworthHouse_t = HousePrice_t - Debt_t - HouseFees_t
                    // Renter
                    Rent_t = Rent_t*(1 + periodicRentInflation)
-                   NetworthRenter_t  = NetworthRenter_t - Rent_t
-                   // Equalize cashflow
-                   PortfolioGain_t = Portfolio_t*periodicPortfolioReturn + periodicMortgage + HouseFees_t - Rent_t
-                   Portfolio_t = Portfolio_t + PortfolioGain_t
-                   if (Portfolio_t > 0) {
-                      NetworthRenter_t = NetworthRenter_t + PortfolioGain_t
+                   CashflowRent_t = -Rent_t
+                   NetworthRent_t  = NetworthRent_t + CashflowRent_t
+                   // Portfolio return & equalize cashflows             
+                   CashflowDifference_t = CashflowRent_t - CashflowHouse_t  //positive CashflowDifference means homeowner paid made than renter, and viceversa
+                   if (CashflowDifference_t >= 0) {
+                      CashflowTotal_t = CashflowTotal_t + CashflowHouse_t
+                      PortfolioRenterGain_t = PortfolioRenter_t*periodicPortfolioReturn + CashflowDifference_t
+                      PortfolioHomeownerGain_t = PortfolioHomeowner_t*periodicPortfolioReturn
                    } else {
-                      NetworthHomeowner_t = NetworthHomeowner_t - PortfolioGain_t
+                      CashflowTotal_t = CashflowTotal_t + CashflowRent_t
+                      PortfolioRenterGain_t = PortfolioRenter_t*periodicPortfolioReturn
+                      PortfolioHomeownerGain_t = PortfolioHomeowner_t*periodicPortfolioReturn - CashflowDifference_t
                    }
+
+                   PortfolioHomeowner_t =  PortfolioHomeowner_t + PortfolioHomeownerGain_t
+                   PortfolioRenter_t =  PortfolioRenter_t + PortfolioRenterGain_t
+                   // Final Networth
+                   NetworthHomeowner_t = NetworthHouse_t + PortfolioHomeowner_t
+                   NetworthRenter_t = NetworthRent_t + PortfolioRenter_t
                    Difference_t = Math.abs(NetworthRenter_t - NetworthHomeowner_t)
                 }
 

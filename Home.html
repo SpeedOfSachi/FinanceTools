@@ -8,35 +8,31 @@
   body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #003366; /* Dark blue background */
+    background-color: #003366; 
   }
 
-  /* Style for the webpage name */
   .title {
-    margin-top: 155px; /* Lower the title */
-    font-size: 90px; /* Larger text */
+    margin-top: 155px; 
+    font-size: 90px; 
     color: #fff;
     text-align: center;
   }
 
-  /* Style for the navigation bar to span entire width */
   .navbar {
     display: flex;
     justify-content: center;
     width: 100%;
-    margin-top: 155px; /* Increased margin to push menu further down */
+    margin-top: 155px; 
     position: relative;
   }
 
-  /* Make the menu bar span entire width at the top level and distribute items evenly */
   .menu-bar {
     display: flex;
     width: 100%;
-    justify-content: center; /* Center the menu items */
-    background-color: #002244; /* Ensure menu bar is visible */
+    justify-content: center; 
+    background-color: #002244; 
   }
 
-  /* Style for menu items */
   .menu {
     position: relative;
     margin: 0 10px;
@@ -48,18 +44,16 @@
     width: 180px;
     align-items: center;
     justify-content: center;
-    font-size: 24px; /* Larger text */
+    font-size: 24px; 
     color: #fff;
     text-decoration: none;
     cursor: pointer;
   }
 
-  /* Add hover effect */
   .menu > a:hover {
     background-color: #004080;
   }
 
-  /* Dropdown content, hidden by default, appears on hover */
   .dropdown {
     display: none;
     position: absolute;
@@ -70,12 +64,18 @@
     z-index: 1;
   }
 
-  /* Show dropdown on hover of the parent .menu */
-  .menu:hover .dropdown {
-    display: block;
+  /* Desktop Hover Logic */
+  @media (min-width: 769px) {
+    .menu:hover .dropdown {
+        display: block;
+    }
   }
 
-  /* Links inside dropdown */
+  /* Mobile Click Logic Class */
+  .dropdown.mobile-show {
+    display: block !important;
+  }
+
   .dropdown a {
     padding: 12px 16px;
     display: block;
@@ -83,68 +83,60 @@
     text-decoration: none;
   }
 
-  /* Change color on hover in dropdown */
   .dropdown a:hover {
     background-color: #0059b3;
   }
 
-  /* Mobile-specific Styles */
   @media (max-width: 768px) {
-    /* Adjust title font size for mobile */
     .title {
       font-size: 40px;
       margin-top: 100px;
     }
 
-    /* Stack the navbar items vertically on small screens */
     .menu-bar {
       flex-direction: column;
-      align-items: stretch; /* UPDATED: Stretches items to full width */
+      align-items: stretch;
       margin-top: 20px; 
       width: 100%;
     }
 
     .menu {
-      margin: 0; /* UPDATED: Removed side margin so it touches edges */
-      width: 100%; /* UPDATED: Forces container to be full width */
-      border-bottom: 1px solid #004080; /* Optional: adds a separator line */
+      margin: 0;
+      width: 100%;
+      border-bottom: 1px solid #004080;
     }
 
     .menu > a {
-      width: 100%; /* Make menu items span full width */
+      width: 100%;
       font-size: 18px;
       height: 50px;
-      box-sizing: border-box; /* Ensures padding doesn't break width */
+      box-sizing: border-box;
     }
 
     .dropdown {
-      position: static; /* Make dropdown appear directly below the menu item */
-      width: 100%; /* UPDATED: explicit full width */
+      position: static;
+      width: 100%;
       min-width: 100%;
     }
 
-    /* Make the dropdown links full-width on mobile */
     .dropdown a {
       width: 100%;
-      padding: 15px 0; /* Adjust padding, centered text looks better with top/bottom padding */
-      text-align: center; /* Optional: centers dropdown text on mobile */
+      padding: 15px 0;
+      text-align: center;
       font-size: 16px; 
       box-sizing: border-box;
     }
   }
 
-  /* Extra small screen adjustments (mobile phones in portrait mode) */
   @media (max-width: 480px) {
     .title {
       font-size: 30px;
       margin-top: 80px;
     }
-
     .menu > a {
       font-size: 16px;
       height: 45px;
     }
-
     .dropdown a {
       font-size: 14px; 
     }

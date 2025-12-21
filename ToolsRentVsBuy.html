@@ -22,7 +22,7 @@
         Home
     </a>
     <h1 class="text-white text-center text-3xl sm:text-4xl mt-16 mb-6 md:text-6xl mt-16 mb-6 lg:text-[70px] mt-12 mb-6">
-        Rent Vs Buy [Beta]
+        Rent Vs. Buy Calculator
     </h1>
 
   <form class="w-full max-w-2xl bg-gray-100 text-gray-800 rounded-xl shadow-2xl p-8 md:p-12" onsubmit="return false;">
@@ -102,6 +102,22 @@
             <h2 class="text-xl font-medium text-gray-300">Difference</h2>
             <p id="Difference" class="text-4xl font-bold text-white mt-2">$0.00</p>
         </div>
+
+        <div class="flex flex-col items-center justify-center">
+            <h2 class="text-xl font-medium text-gray-300">Total Cash Outflows</h2>
+            <p id="TotalCashOutflow" class="text-4xl font-bold text-white mt-2">$0.00</p>
+        </div>
+
+        <div class="flex flex-col items-center justify-center">
+            <h2 class="text-xl font-medium text-gray-300">Final House Price</h2>
+            <p id="FinalHousePrice" class="text-4xl font-bold text-white mt-2">$0.00</p>
+        </div>
+
+        <div class="flex flex-col items-center justify-center">
+            <h2 class="text-xl font-medium text-gray-300">Difference (%)</h2>
+            <p id="DifferencePercent" class="text-4xl font-bold text-white mt-2">$0.00</p>
+        </div>
+
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -123,6 +139,9 @@
             let NetworthRenterEl = document.getElementById('NetworthRenter');
             let NetworthHomeownerEl = document.getElementById('NetworthHomeowner');
             let DifferenceEl = document.getElementById('Difference');
+            let TotalCashOutflowEl = document.getElementById('TotalCashOutflow');
+            let FinalHousePriceEl = document.getElementById('FinalHousePrice');
+            let DifferencePercentEl = document.getElementById('DifferencePercent');
 
             // Calculates the payment, total periods, and total interest.
 
@@ -149,6 +168,7 @@
                 let PortfolioHomeowner_t = 0;
                 let PortfolioHomeownerGain_t = 0;
                 let Difference_t = 0;
+                let DifferencePercent_t = 0;
                 let HousePrice_t = 0;
                 let Debt_t = 0;
                 let HouseFees_t = 0;
@@ -156,7 +176,7 @@
                 let CashflowRent_t = 0;
                 let CashflowHouse_t = 0;
                 let CashflowDifference_t = 0;
-                let CashflowTotal_t = 0;
+                let TotalCashOutflow_t = 0;
                 let DownPaymentAmount = DownPayment * HousePrice
                 let DebtAmount = HousePrice - DownPaymentAmount
                 let totalPeriods = Math.floor(AmortizationYears * 12);
@@ -184,10 +204,10 @@
                 // Portfolio return & equalize cashflows             
                 CashflowDifference_t = CashflowRent_t - CashflowHouse_t  //positive CashflowDifference means homeowner paid made than renter, and viceversa
                 if (CashflowDifference_t >= 0) {
-                   CashflowTotal_t = CashflowTotal_t + CashflowHouse_t
+                   TotalCashOutflow_t = TotalCashOutflow_t - CashflowHouse_t
                    PortfolioRenterGain_t = CashflowDifference_t
                 } else {
-                   CashflowTotal_t = CashflowTotal_t + CashflowRent_t
+                   TotalCashOutflow_t = TotalCashOutflow_t - CashflowRent_t
                    PortfolioHomeownerGain_t = -CashflowDifference_t
                 }
                 PortfolioHomeowner_t =  PortfolioHomeowner_t + PortfolioHomeownerGain_t
@@ -196,6 +216,7 @@
                 NetworthHomeowner_t = NetworthHouse_t + PortfolioHomeowner_t
                 NetworthRenter_t = NetworthRent_t + PortfolioRenter_t
                 Difference_t = Math.abs(NetworthRenter_t - NetworthHomeowner_t)
+                DifferencePercent_t = Difference_t / Math.min(NetworthRenter_t, NetworthHomeowner_t)
 
                 // ----- Time 1 to n -----
                 for (let i = 1; i <= totalPeriods; i++) {
@@ -212,11 +233,11 @@
                    // Portfolio return & equalize cashflows             
                    CashflowDifference_t = CashflowRent_t - CashflowHouse_t  //positive CashflowDifference means homeowner paid made than renter, and viceversa
                    if (CashflowDifference_t >= 0) {
-                      CashflowTotal_t = CashflowTotal_t + CashflowHouse_t
+                      TotalCashOutflow_t = TotalCashOutflow_t - CashflowHouse_t
                       PortfolioRenterGain_t = PortfolioRenter_t*periodicPortfolioReturn + CashflowDifference_t
                       PortfolioHomeownerGain_t = PortfolioHomeowner_t*periodicPortfolioReturn
                    } else {
-                      CashflowTotal_t = CashflowTotal_t + CashflowRent_t
+                      TotalCashOutflow_t = TotalCashOutflow_t - CashflowRent_t
                       PortfolioRenterGain_t = PortfolioRenter_t*periodicPortfolioReturn
                       PortfolioHomeownerGain_t = PortfolioHomeowner_t*periodicPortfolioReturn - CashflowDifference_t
                    }
@@ -227,6 +248,7 @@
                    NetworthHomeowner_t = NetworthHouse_t + PortfolioHomeowner_t
                    NetworthRenter_t = NetworthRent_t + PortfolioRenter_t
                    Difference_t = Math.abs(NetworthRenter_t - NetworthHomeowner_t)
+                   DifferencePercent_t = Difference_t / Math.min(NetworthRenter_t, NetworthHomeowner_t)
                 }
 
                 // test code
@@ -258,6 +280,30 @@
                     currency: 'USD',
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
+                 });
+
+                 // 4. Total Cash Outflows
+                 TotalCashOutflowEl.textContent = TotalCashOutflow_t.toLocaleString('en-US', {
+                     style: 'currency',
+                     currency: 'USD',
+                     minimumFractionDigits: 2,
+                     maximumFractionDigits: 2
+                 });
+
+                 // 5. Home Equity
+                 FinalHousePriceEl.textContent = HousePrice_t.toLocaleString('en-US', {
+                     style: 'currency',
+                     currency: 'USD',
+                     minimumFractionDigits: 2,
+                     maximumFractionDigits: 2
+                 });
+
+                 // 6. Difference (%)
+                 DifferencePercentEl.textContent = DifferencePercent_t.toLocaleString('en-US', {
+                     style: 'percent',
+                     currency: 'USD',
+                     minimumFractionDigits: 2,
+                     maximumFractionDigits: 2
                  });
             }
 

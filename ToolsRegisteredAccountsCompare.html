@@ -30,12 +30,12 @@
         
         <div>
             <label for="balance" class="block text-sm font-medium text-gray-700 mb-1">Balance ($)</label>
-            <input type="number" id="balance" step="0.01" value="100000" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <input type="number" id="balance" step="0.01" value="10000" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
         
         <div>
-            <label for="interestRate1" class="block text-sm font-medium text-gray-700 mb-1">Interest Rate 1 (%)</label>
-            <input type="number" id="interestRate1" step="0.01" value="4" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <label for="taxRateStart" class="block text-sm font-medium text-gray-700 mb-1">Tax Rate Start (%)</label>
+            <input type="number" id="taxRateStart" step="0.01" value="50" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
 
         <div>
@@ -44,8 +44,8 @@
         </div>
 
         <div>
-            <label for="interestRate2" class="block text-sm font-medium text-gray-700 mb-1">Interest Rate 2 (%)</label>
-            <input type="number" id="interestRate2" step="0.01" value="4.5" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <label for="taxRateEnd" class="block text-sm font-medium text-gray-700 mb-1">Tax Rate End (%)</label>
+            <input type="number" id="taxRateEnd" step="0.01" value="4.5" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
 
 
@@ -89,8 +89,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             let balanceEl = document.getElementById('balance'); 
-            let interestRate1El = document.getElementById('interestRate1'); 
-            let interestRate2El = document.getElementById('interestRate2'); 
+            let taxRateStartEl = document.getElementById('taxRateStart'); 
+            let taxRateEndEl = document.getElementById('taxRateEnd'); 
             let paymentFrequencyEl = document.getElementById('paymentFrequency');
             let amortizationEl = document.getElementById('amortization'); 
             let calculateBtn = document.getElementById('calculateBtn');
@@ -106,8 +106,8 @@
             function calculateMortgageMetrics() {
                 // Get and parse all values
                 let balance = parseFloat(balanceEl.value) || 0; 
-                let interestRate1 = (parseFloat(interestRate1El.value) || 0) / 100;
-                let interestRate2 = (parseFloat(interestRate2El.value) || 0) / 100;
+                let taxRateStart = (parseFloat(taxRateStartEl.value) || 0) / 100;
+                let taxRateEnd = (parseFloat(taxRateEndEl.value) || 0) / 100;
                 let frequency = paymentFrequencyEl.value;
                 let frequencyAnn = 0;
                 let amortizationYears = parseFloat(amortizationEl.value) || 0; 
@@ -128,8 +128,8 @@
                 
                 // Mortgage Variables
                 let totalPeriods = Math.floor(amortizationYears * frequencyAnn);
-                let periodicRate1 = interestRate1 / frequencyAnn;
-                let periodicRate2 = interestRate2 / frequencyAnn;
+                let periodicRate1 = taxRateStart / frequencyAnn;
+                let periodicRate2 = taxRateEnd / frequencyAnn;
                 let periodicPayment1 = 0;
                 let periodicPayment2 = 0;
                 let totalInterest1 = 0;
@@ -165,14 +165,14 @@
                 // Calculate Savings
                 totalInterestSavings = Math.abs(totalInterest1 - totalInterest2)
                 periodicPaymentSavings = Math.abs(periodicPayment1 - periodicPayment2)
-                if (interestRate1 > interestRate2) {
-                   if (interestRate2 === 0) {
+                if (taxRateStart > taxRateEnd) {
+                   if (taxRateEnd === 0) {
                       totalSavingsPV = periodicPayment1 * totalPeriods - balance
                    } else {
                       totalSavingsPV = periodicPayment1 * (1 - (1 + periodicRate2)**(-totalPeriods)) / periodicRate2 - balance
                    }
-                } else if (interestRate2 > interestRate1) {
-                   if (interestRate1 === 0) {
+                } else if (taxRateEnd > taxRateStart) {
+                   if (taxRateStart === 0) {
                       totalSavingsPV = periodicPayment2 * totalPeriods - balance
                    } else {
                       totalSavingsPV = periodicPayment2 * (1 - (1 + periodicRate1)**(-totalPeriods)) / periodicRate1 - balance

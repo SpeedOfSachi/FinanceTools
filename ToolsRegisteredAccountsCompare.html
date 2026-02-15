@@ -94,7 +94,7 @@
 
         <div class="flex flex-col items-center justify-center">
             <h2 class="text-xl font-medium text-gray-300">Account 2 Balance</h2>
-            <p id="account2BalanceOutput" class="text-4xl font-bold text-white mt-2">0</p>
+            <p id="account2BalanceOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
         </div>
 
         <div class="flex flex-col items-center justify-center">
@@ -116,8 +116,8 @@
             let calculateBtn = document.getElementById('calculateBtn');
             
             // Updated output element IDs
-            let account2BalanceOutputEl = document.getElementById('account2BalanceOutput'); // New
-            let account1BalanceOutputEl = document.getElementById('account1BalanceOutput'); // Renamed/Replaced
+            let account2BalanceOutputEl = document.getElementById('account2BalanceOutput');
+            let account1BalanceOutputEl = document.getElementById('account1BalanceOutput');
             let differenceOutputEl = document.getElementById('differenceOutput'); // New
 
             /**
@@ -140,9 +140,9 @@
                 let periodicPayment2 = 0;
                 let totalInterest1 = 0;
                 let totalInterest2 = 0;
-                let periodicPaymentSavings = 0;
+                let account1Balance = 0;
                 let difference = 0;
-                let totalSavingsPV = 0;
+                let account2Balance = 0;
 
                 // Calculate Mortgage 1
                 if (totalPeriods === 0) {
@@ -170,34 +170,42 @@
 
                 // Calculate Savings
                 difference = Math.abs(totalInterest1 - totalInterest2)
-                periodicPaymentSavings = Math.abs(periodicPayment1 - periodicPayment2)
+                account1Balance = Math.abs(periodicPayment1 - periodicPayment2)
                 if (taxRateStart > taxRateEnd) {
                    if (taxRateEnd === 0) {
-                      totalSavingsPV = periodicPayment1 * totalPeriods - balance
+                      account2Balance = periodicPayment1 * totalPeriods - balance
                    } else {
-                      totalSavingsPV = periodicPayment1 * (1 - (1 + periodicRate2)**(-totalPeriods)) / periodicRate2 - balance
+                      account2Balance = periodicPayment1 * (1 - (1 + periodicRate2)**(-totalPeriods)) / periodicRate2 - balance
                    }
                 } else if (taxRateEnd > taxRateStart) {
                    if (taxRateStart === 0) {
-                      totalSavingsPV = periodicPayment2 * totalPeriods - balance
+                      account2Balance = periodicPayment2 * totalPeriods - balance
                    } else {
-                      totalSavingsPV = periodicPayment2 * (1 - (1 + periodicRate1)**(-totalPeriods)) / periodicRate1 - balance
+                      account2Balance = periodicPayment2 * (1 - (1 + periodicRate1)**(-totalPeriods)) / periodicRate1 - balance
                    }
                 } else {
-                   totalSavingsPV = 0
+                   account2Balance = 0
                 }
 
                 // --- Display Results ---
 
-                // 1. Period Payment Savings
-                account1BalanceOutputEl.textContent = periodicPaymentSavings.toLocaleString('en-US', {
+                // 1. Account 1 Balance
+                account1BalanceOutputEl.textContent = account1Balance.toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                  });
 
-                // 2. Dfiference
+                // 2. Account 2 Balance
+                account2BalanceOutputEl.textContent = account2Balance.toLocaleString('en-US', {
+                   style: 'currency',
+                   currency: 'USD',
+                   minimumFractionDigits: 2,
+                   maximumFractionDigits: 2
+                });
+
+                // 3. Dfiference
                 differenceOutputEl.textContent = difference.toLocaleString('en-US', {
                    style: 'currency',
                    currency: 'USD',
@@ -205,13 +213,6 @@
                    maximumFractionDigits: 2
                 });
 
-                // 3. Total Interest (Currency)
-                account2BalanceOutputEl.textContent = totalSavingsPV.toLocaleString('en-US', {
-                   style: 'currency',
-                   currency: 'USD',
-                   minimumFractionDigits: 2,
-                   maximumFractionDigits: 2
-                });
             }
 
             // --- Event Listeners ---

@@ -31,7 +31,7 @@
         <div>
             <label for="account1" class="block text-sm font-medium text-gray-700 mb-1">Account 1</label>
             <select id="account1" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                <option value="RRSP">RRSP</option>
+                <option value="RRSP" selected>RRSP</option>
                 <option value="TFSA">TFSA</option>
                 <option value="Margin">Margin</option>
             </select>
@@ -41,7 +41,7 @@
             <label for="account2" class="block text-sm font-medium text-gray-700 mb-1">Account 2</label>
             <select id="account2" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 <option value="RRSP">RRSP</option>
-                <option value="TFSA">TFSA</option>
+                <option value="TFSA" selected>TFSA</option>
                 <option value="Margin">Margin</option>
             </select>
         </div>
@@ -144,20 +144,27 @@
                 let account1Balance = 0;
                 let account2Balance = 0;
                 let difference = 0;
+                let differencePercent = 0;
+                let differenceDisplay = "";
                 let balanceTFSA = 0;
                 let balanceRRSP = 0;
                 let balanceMargin = 0;
+                let taxRefund_t = 0;
 
                 // Calculate TFSA
                 balanceTFSA = balance*(1 + capitalReturn + divYield)**timeYears
 
                 // Calculate Margin
-                balanceTFSA = balance*(1 + capitalReturn + divYield*(1 - divTaxRate))**timeYears
+                balanceMargin = balance*(1 + capitalReturn + divYield*(1 - divTaxRate))**timeYears
                 
                 // Calculate RRSP
+                balanceRRSP = balance
+                taxRefund_t = balance*taxRateStart
                 for (let i = 1; i <= timeYears; i++) {
-                balanceRRSP = 5
+                   balanceRRSP = balanceRRSP*(1 + capitalReturn + divYield) + taxRefund_t
+                   taxRefund_t = taxRefund_t*taxRateStart
                 }
+                balanceRRSP = balanceRRSP*(1 - taxRateEnd)
 
                 //Account 1 Balance
                 if (account1 == "TFSA") {
@@ -178,7 +185,9 @@
                }
 
                 //Difference
-                difference = Math.abs(account1 - account2)
+                difference = Math.abs(account1Balance - account2Balance)
+                differencePercent = 100*Math.abs(difference / Math.min(account1Balance, account2Balance))
+                differenceDisplay = differencePercent.toFixed(1).toLocaleString('en-US', { useGrouping: false }) + "%"
                 
                 // --- Display Results ---
 
@@ -199,12 +208,7 @@
                 });
 
                 // 3. Dfiference
-                differenceOutputEl.textContent = difference.toLocaleString('en-US', {
-                   style: 'currency',
-                   currency: 'USD',
-                   minimumFractionDigits: 2,
-                   maximumFractionDigits: 2
-                });
+                differenceOutputEl.textContent = differenceDisplay.toString();
 
             }
 

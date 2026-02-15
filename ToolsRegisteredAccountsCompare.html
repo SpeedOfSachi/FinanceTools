@@ -88,13 +88,13 @@
    <div id="result" class="mt-12 w-full max-w-4xl grid grid-cols-1 sm:grid-cols-3 gap-y-8 sm:gap-4 text-center">
 
         <div class="flex flex-col items-center justify-center">
-            <h2 class="text-xl font-medium text-gray-300">Savings per Payment</h2>
-            <p id="periodPaymentSavingsOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
+            <h2 class="text-xl font-medium text-gray-300">Account 1 Balance</h2>
+            <p id="account1BalanceOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
         </div>
 
         <div class="flex flex-col items-center justify-center">
-            <h2 class="text-xl font-medium text-gray-300">Total PV Savings</h2>
-            <p id="totalSavingsPvOutput" class="text-4xl font-bold text-white mt-2">0</p>
+            <h2 class="text-xl font-medium text-gray-300">Account 2 Balance</h2>
+            <p id="account2BalanceOutput" class="text-4xl font-bold text-white mt-2">0</p>
         </div>
 
         <div class="flex flex-col items-center justify-center">
@@ -116,8 +116,8 @@
             let calculateBtn = document.getElementById('calculateBtn');
             
             // Updated output element IDs
-            let totalSavingsPvOutputEl = document.getElementById('totalSavingsPvOutput'); // New
-            let periodPaymentSavingsOutputEl = document.getElementById('periodPaymentSavingsOutput'); // Renamed/Replaced
+            let account2BalanceOutputEl = document.getElementById('account2BalanceOutput'); // New
+            let account1BalanceOutputEl = document.getElementById('account1BalanceOutput'); // Renamed/Replaced
             let differenceOutputEl = document.getElementById('differenceOutput'); // New
 
             /**
@@ -190,7 +190,7 @@
                 // --- Display Results ---
 
                 // 1. Period Payment Savings
-                periodPaymentSavingsOutputEl.textContent = periodicPaymentSavings.toLocaleString('en-US', {
+                account1BalanceOutputEl.textContent = periodicPaymentSavings.toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
                     minimumFractionDigits: 2,
@@ -206,7 +206,7 @@
                 });
 
                 // 3. Total Interest (Currency)
-                totalSavingsPvOutputEl.textContent = totalSavingsPV.toLocaleString('en-US', {
+                account2BalanceOutputEl.textContent = totalSavingsPV.toLocaleString('en-US', {
                    style: 'currency',
                    currency: 'USD',
                    minimumFractionDigits: 2,

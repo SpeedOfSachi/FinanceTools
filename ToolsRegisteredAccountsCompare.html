@@ -98,8 +98,8 @@
         </div>
 
         <div class="flex flex-col items-center justify-center">
-            <h2 class="text-xl font-medium text-gray-300">Total Interest Savings</h2>
-            <p id="totalInterestSavingsOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
+            <h2 class="text-xl font-medium text-gray-300">Dfiference</h2>
+            <p id="differenceOutput" class="text-4xl font-bold text-white mt-2">$0.00</p>
         </div>
     </div>
     <script>
@@ -118,7 +118,7 @@
             // Updated output element IDs
             let totalSavingsPvOutputEl = document.getElementById('totalSavingsPvOutput'); // New
             let periodPaymentSavingsOutputEl = document.getElementById('periodPaymentSavingsOutput'); // Renamed/Replaced
-            let totalInterestSavingsOutputEl = document.getElementById('totalInterestSavingsOutput'); // New
+            let differenceOutputEl = document.getElementById('differenceOutput'); // New
 
             /**
              * Calculates the payment, total periods, and total interest.
@@ -141,7 +141,7 @@
                 let totalInterest1 = 0;
                 let totalInterest2 = 0;
                 let periodicPaymentSavings = 0;
-                let totalInterestSavings = 0;
+                let difference = 0;
                 let totalSavingsPV = 0;
 
                 // Calculate Mortgage 1
@@ -169,7 +169,7 @@
                 }
 
                 // Calculate Savings
-                totalInterestSavings = Math.abs(totalInterest1 - totalInterest2)
+                difference = Math.abs(totalInterest1 - totalInterest2)
                 periodicPaymentSavings = Math.abs(periodicPayment1 - periodicPayment2)
                 if (taxRateStart > taxRateEnd) {
                    if (taxRateEnd === 0) {
@@ -197,8 +197,8 @@
                     maximumFractionDigits: 2
                  });
 
-                // 2. Total Interest Savings
-                totalInterestSavingsOutputEl.textContent = totalInterestSavings.toLocaleString('en-US', {
+                // 2. Dfiference
+                differenceOutputEl.textContent = difference.toLocaleString('en-US', {
                    style: 'currency',
                    currency: 'USD',
                    minimumFractionDigits: 2,

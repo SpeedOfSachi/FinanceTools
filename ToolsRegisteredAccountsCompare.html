@@ -78,7 +78,7 @@
 
         <div>
             <label for="timeYears" class="block text-sm font-medium text-gray-700 mb-1">Investment Horizon (years)</label>
-            <input type="number" id="capitalReturn" step="1" value="20" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <input type="number" id="timeYears" step="1" value="20" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
 
         <div class="md:col-span-2 mt-4">
@@ -111,11 +111,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             // input elements
+            let account1El = document.getElementById('account1'); 
+            let account2El = document.getElementById('account2'); 
             let balanceEl = document.getElementById('balance'); 
             let taxRateStartEl = document.getElementById('taxRateStart'); 
             let taxRateEndEl = document.getElementById('taxRateEnd'); 
-            let account1El = document.getElementById('account1');
-            let account2El = document.getElementById('account2');
             let divTaxRateEl = document.getElementById('divTaxRate'); 
             let divYieldEl = document.getElementById('divYield'); 
             let capitalReturnEl = document.getElementById('capitalReturn'); 
@@ -127,14 +127,13 @@
             let account1BalanceOutputEl = document.getElementById('account1BalanceOutput');
             let differenceOutputEl = document.getElementById('differenceOutput'); // New
 
-            /**
-             * Calculates the payment, total periods, and total interest.
-             */
-            function calculateMortgageMetrics() {
-                // Get and parse all values
+            // Calculate Account Balances
+            function calculateAccountBalances() {
+                // Get and parse all input values
+                let account1 = account1El.value;
+                let account2 = account2El.value;
                 let balance = parseFloat(balanceEl.value) || 0; 
                 let taxRateStart = (parseFloat(taxRateStartEl.value) || 0) / 100;
-                let taxRateEnd = (parseFloat(taxRateEndEl.value) || 0) / 100;
                 let taxRateEnd = (parseFloat(taxRateEndEl.value) || 0) / 100;
                 let divTaxRate = (parseFloat(divTaxRateEl.value) || 0) / 100;
                 let divYield = (parseFloat(divYieldEl.value) || 0) / 100;
@@ -155,13 +154,32 @@
                 // Calculate Margin
                 balanceTFSA = balance*(1 + capitalReturn + divYield*(1 - divTaxRate))**timeYears
                 
-                // RRSP
+                // Calculate RRSP
+                for (let i = 1; i <= timeYears; i++) {
                 balanceRRSP = 5
+                }
 
-                //Conclusion
+                //Account 1 Balance
+                if (account1 == "TFSA") {
+                   account1Balance = balanceTFSA
+                } else if (account1 == "Margin") {
+                   account1Balance = balanceMargin
+                } else if (account1 == "RRSP") {
+                   account1Balance = balanceRRSP
+               }
+               
+                //Account 2 Balance
+                if (account2 == "TFSA") {
+                   account2Balance = balanceTFSA
+                } else if (account2 == "Margin") {
+                   account2Balance = balanceMargin
+                } else if (account2 == "RRSP") {
+                   account2Balance = balanceRRSP
+               }
+
+                //Difference
+                difference = Math.abs(account1 - account2)
                 
-
-                 
                 // --- Display Results ---
 
                 // 1. Account 1 Balance
@@ -191,7 +209,7 @@
             }
 
             // --- Event Listeners ---
-            calculateBtn.addEventListener('click', calculateMortgageMetrics);
+            calculateBtn.addEventListener('click', calculateAccountBalances);
 
         });
     </script>
